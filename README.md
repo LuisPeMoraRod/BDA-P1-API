@@ -4,7 +4,16 @@ First project's API for the frontend's SPA (developed in Angular) to be able to 
 
 ## How to run API
 
-1) Clone repository: `git clone `
-2) Install dependencies: `npm i`
-3) Run project: `npm start`
+1) Clone repository: 
+```
+git clone git@github.com:LuisPeMoraRod/TI3600-P1-API.git
+```
+2) Install dependencies: 
+```
+npm i
+```
+3) Run project: 
+```
+npm start
+```
 
