@@ -1,7 +1,7 @@
 {
   "name": "api",
   "version": "1.0.0",
-  "description": "API for the SPA (Angular) to retrieve and update data from a MongoDB",
+  "description": "API for the SPA (Angular) to retrieve and update data from a MongoDB Cloud cluster",
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js"
