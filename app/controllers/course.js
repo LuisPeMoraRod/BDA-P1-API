@@ -21,7 +21,7 @@ exports.newCourse = async (req, res) => {
         })
 
         const matchCourse = await Course.findOne({ name: courseName });
-        if (!!matchCourse) res.status(codes.StatusCodes.BAD_REQUEST).json({ message: "Error: course already exists" }); // check if course name is available
+        if (!!matchCourse) res.status(codes.StatusCodes.BAD_REQUEST).json({ message: "Error: course name already in use" }); // check if course name is available
         else {
             const savedCourse = await newCourse.save(); // update db
             res.status(codes.StatusCodes.OK).json(savedCourse);

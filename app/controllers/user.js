@@ -34,7 +34,7 @@ exports.newUser = async (req, res) => {
         if (req.body.classSection) user.classSection = req.body.classSection; // optional field
 
         const matchUser = await User.findOne({ email: user.email });
-        if (!!matchUser) res.status(codes.StatusCodes.BAD_REQUEST).json({ message: "Error: email already exists" }) // check if email is available
+        if (!!matchUser) res.status(codes.StatusCodes.BAD_REQUEST).json({ message: "Error: email already in use" }) // check if email is available
         else {
             const savedUser = await user.save(); //update DB
             res.status(codes.StatusCodes.OK).json(savedUser);
