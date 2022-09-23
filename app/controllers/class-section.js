@@ -6,8 +6,8 @@ const ClassSection = require('../models/class-section')
 exports.getSection = async (req, res) => {
     try {
         const sectionName = req.params.section;
-        const resData = await ClassSection.find({ name: sectionName }, { _id: 0, name: 1 });
-        res.status(codes.StatusCodes.OK).json(resData);
+        const sectData = await ClassSection.find({ name: sectionName }, { _id: 0, name: 1 });
+        res.status(codes.StatusCodes.OK).json(sectData);
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
     }

@@ -1,5 +1,5 @@
 require('dotenv').config(); // read .env file
-
+var cors = require('cors') //cross-origin middleware
 const express = require('express');
 const mongoose = require('mongoose');
 const mongoString = process.env.MONGODB_URL // db connection string
@@ -19,6 +19,8 @@ database.once('connected', () => {
 
 // define express app
 const app = express();
+
+app.use(cors()) // accept all CORS request
 app.use(express.json());
 
 // endpoints base
