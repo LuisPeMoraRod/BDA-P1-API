@@ -44,6 +44,57 @@
                         "description": "INTERNAL_SERVER_ERROR"
                     }
                 }
+            },
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Register new user",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "description": "User data",
+                        "type": "object",
+                        "schema": {
+                            "properties": {
+                                "firstName_id": {
+                                    "type": "string"
+                                },
+                                "lastName1": {
+                                    "type": "string"
+                                },
+                                "lastName2": {
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "type": "string"
+                                },
+                                "password": {
+                                    "type": "string"
+                                },
+                                "isAdmin": {
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK: user registered",
+                        "schema": {
+                            "$ref": "#/definitions/Users"
+                        }
+                    },
+                    "400": {
+                        "description": "BAD_REQUEST: email already taken"
+                    },
+                    "500": {
+                        "description": "INTERNAL_SERVER_ERROR"
+                    }
+                }
             }
         },
         "/users/{email}": {
@@ -60,7 +111,7 @@
                     "name": "password",
                     "in": "query",
                     "required": true,
-                    "description": "Email of user you want to authenticate",
+                    "description": "Password of user you want to authenticate",
                     "type": "string",
                     "format": "password"
                 }
