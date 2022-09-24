@@ -18,3 +18,5 @@ npm i
 npm start
 ```
 
+## Swagger Documentation
+To access Swagger documentation, run the service and then go to: http://localhost:3000/api-docs/
