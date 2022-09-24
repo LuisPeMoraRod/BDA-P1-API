@@ -1,0 +1,163 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "ADB - Project 1",
+        "description": "Advanced DBs first project's API",
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "host": "localhost:3000",
+    "basePath": "/api",
+    "tags": [
+        {
+            "name": "Users",
+            "description": "API for users in the system"
+        }
+    ],
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/users": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get all users' data",
+                "responses": {
+                    "200": {
+                        "description": "OK: array of users retrieved",
+                        "schema": {
+                            "$ref": "#/definitions/Users"
+                        }
+                    },
+                    "500": {
+                        "description": "INTERNAL_SERVER_ERROR"
+                    }
+                }
+            }
+        },
+        "/users/{email}": {
+            "parameters": [
+                {
+                    "name": "email",
+                    "in": "path",
+                    "required": true,
+                    "description": "Email of user you want to authenticate",
+                    "type": "string",
+                    "format": "email"
+                },
+                {
+                    "name": "password",
+                    "in": "query",
+                    "required": true,
+                    "description": "Email of user you want to authenticate",
+                    "type": "string",
+                    "format": "password"
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Authenticate user by email and password",
+                "responses": {
+                    "200": {
+                        "description": "OK: email and password were correct",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    "400": {
+                        "description": "BAD_REQUEST: email not registered"
+                    },
+                    "403": {
+                        "description": "FORBIDDEN: incorrect password"
+                    },
+                    "500": {
+                        "description": "INTERNAL_SERVER_ERROR"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "User": {
+            "required": [
+                "firstName",
+                "lastName1",
+                "lastName2",
+                "email",
+                "password",
+                "isAdmin"
+            ],
+            "properties": {
+                "firstName_id": {
+                    "type": "string"
+                },
+                "lastName1": {
+                    "type": "string"
+                },
+                "lastName2": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "isAdmin": {
+                    "type": "boolean"
+                },
+                "wantedCourses": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "_id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "category": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "proposedCourses": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "_id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "category": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "Users": {
+            "type": "array",
+            "$ref": "#/definitions/User"
+        }
+    }
+}
