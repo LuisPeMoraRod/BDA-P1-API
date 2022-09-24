@@ -17,8 +17,19 @@ npm i
 ```
 npm start
 ```
+## How to run the 3 containers locally
 
-## How to run Docker container locally
+1) Build images and spin up containers with Docker Compose
+```
+docker-compose up
+```
+
+2) Stop containers
+```
+docker-compose down
+```
+
+## How to run single Docker container locally
 
 1) Build image:
 ```

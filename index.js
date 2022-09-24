@@ -2,10 +2,19 @@ require('dotenv').config(); // read .env file
 var cors = require('cors') //cross-origin middleware
 const express = require('express');
 const mongoose = require('mongoose');
-const mongoString = process.env.MONGODB_URL // db connection string
 const router = require('./app/routes/router'); // get service router
 const swaggerUi = require('swagger-ui-express'),
 swaggerDocument = require('./swagger.json');
+
+const connStrings = require('./app/helpers/conn-strings'); 
+
+// set connection strings depending on instance number
+const mongoString = connStrings.setDBUrl();
+const port = connStrings.setPort();
+
+const [replica1, replica2] = connStrings.setReplicaAPIs();
+console.log(replica1);
+console.log(replica2);
 
 //database connection
 mongoose.connect(mongoString);
@@ -27,8 +36,6 @@ app.use(express.json());
 
 // endpoints base
 app.use('/api', router);
-
-const port = process.env.PORT || 3000; //select port
 
 // swagger UI doc
 app.use(

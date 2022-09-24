@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  api0:
+    build:
+      dockerfile: Dockerfile.api0
+    container_name: api0_c
+    ports:
+      - '3000:3000'
+  api1:
+    build:
+      dockerfile: Dockerfile.api1
+    container_name: api1_c
+    ports:
+      - '3001:3001'
+  api2:
+    build:
+      dockerfile: Dockerfile.api2
+    container_name: api2_c
+    ports:
+      - '3002:3002'
+  
+
