@@ -7,7 +7,7 @@ exports.getSection = async (req, res) => {
     try {
         const sectionName = req.params.section;
         const sectData = await ClassSection.find({ name: sectionName }, { _id: 0, name: 1 });
-        res.status(codes.StatusCodes.OK).json(sectData);
+        res.status(codes.StatusCodes.OK).send(sectData);
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
     }
@@ -17,7 +17,7 @@ exports.getSection = async (req, res) => {
 exports.getAllSections = async (req, res) => {
     try {
         const resData = await ClassSection.find({}, { _id: 0, name: 1 });
-        res.status(codes.StatusCodes.OK).json(resData);
+        res.status(codes.StatusCodes.OK).send(resData);
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
     }
@@ -35,7 +35,7 @@ exports.newSection = async (req, res) => {
         if (!!matchSection) res.status(codes.StatusCodes.BAD_REQUEST).json({ message: "Error: Section already exists" });
         else {
             const savedSection = await classSection.save(); //update DB
-            res.status(codes.StatusCodes.OK).json(savedSection);
+            res.status(codes.StatusCodes.OK).send(savedSection);
         }
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);

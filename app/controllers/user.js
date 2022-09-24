@@ -9,7 +9,7 @@ exports.authUser = async (req, res) => {
         const password = req.query.password;
         const registeredPwd = await User.findOne({ email: email });
         if (!registeredPwd) res.status(codes.StatusCodes.BAD_REQUEST).json({ message: "Error: email not registered" });
-        else if (password !== registeredPwd.password) res.status(codes.StatusCodes.FORBIDDEN).json({ message: "Error: incorrect password" })
+        else if (password !== registeredPwd.password) res.status(codes.StatusCodes.FORBIDDEN).send({ message: "Error: incorrect password" })
         else {
             const user = await User.findOne({ email: email }, { _id: 0, firstName: 1, lastName1: 1, lastName2: 1, email: 1, classSection: 1, wantedCourses: 1, proposedCourses: 1 })
             res.status(codes.StatusCodes.OK).send(user);
@@ -22,7 +22,7 @@ exports.authUser = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
     try {
         const users = await User.find({}, { _id: 0, firstName: 1, lastName1: 1, lastName2: 1, email: 1, classSection: 1, wantedCourses: 1, proposedCourses: 1 })
-        res.status(codes.StatusCodes.OK).json(users);
+        res.status(codes.StatusCodes.OK).send(users);
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
     }
@@ -43,10 +43,10 @@ exports.newUser = async (req, res) => {
         if (req.body.classSection) user.classSection = req.body.classSection; // optional field
 
         const matchUser = await User.findOne({ email: user.email });
-        if (!!matchUser) res.status(codes.StatusCodes.BAD_REQUEST).json({ message: "Error: email already in use" }) // check if email is available
+        if (!!matchUser) res.status(codes.StatusCodes.BAD_REQUEST).send({ message: "Error: email already in use" }) // check if email is available
         else {
             const savedUser = await user.save(); //update DB
-            res.status(codes.StatusCodes.OK).json(savedUser);
+            res.status(codes.StatusCodes.OK).send(savedUser);
         }
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);

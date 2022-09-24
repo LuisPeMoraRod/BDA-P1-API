@@ -6,7 +6,7 @@ exports.getCategory = async (req, res) => {
     try {
         const categoryName = req.params.category;
         const catData = await Category.find({ name: categoryName }, { _id: 0, name: 1 });
-        res.status(codes.StatusCodes.OK).json(catData);
+        res.status(codes.StatusCodes.OK).send(catData);
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
     }
@@ -16,7 +16,7 @@ exports.getCategory = async (req, res) => {
 exports.getAllCategories = async (req, res) => {
     try {
         const catData = await Category.find({}, { _id: 0, name: 1 });
-        res.status(codes.StatusCodes.OK).json(catData);
+        res.status(codes.StatusCodes.OK).send(catData);
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
     }
@@ -34,7 +34,7 @@ exports.newCategory = async (req, res) => {
         if (!!matchCategory) res.status(codes.StatusCodes.BAD_REQUEST).json({ message: "Error: category already exists" });
         else {
             const savedCategory = await category.save(); //update DB
-            res.status(codes.StatusCodes.OK).json(savedCategory);
+            res.status(codes.StatusCodes.OK).send(savedCategory);
         }
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);

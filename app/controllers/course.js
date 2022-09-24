@@ -18,7 +18,7 @@ exports.getCourse = async (req, res) => {
     try {
         const name = req.params.course;
         const courseData = await Course.find({ name: name }, { _id: 0, name: 1, category: 1, interestedStudents: 1, proposedBy: 1 });
-        res.status(codes.StatusCodes.OK).json(courseData);
+        res.status(codes.StatusCodes.OK).send(courseData);
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
     }
@@ -28,7 +28,7 @@ exports.getCourse = async (req, res) => {
 exports.getAllCourses = async (req, res) => {
     try {
         const coursesData = await Course.find({}, { _id: 0, name: 1, category: 1, interestedStudents: 1, proposedBy: 1 });
-        res.status(codes.StatusCodes.OK).json(coursesData);
+        res.status(codes.StatusCodes.OK).send(coursesData);
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
     }
@@ -45,7 +45,7 @@ exports.newCourse = async (req, res) => {
         const proposedBy = await User.findOne({ email: email }, { _id: 0, firstName: 1, lastName1: 1, lastName2: 1, email: 1, classSection: 1 });
 
         if (!proposedBy) {
-            res.status(codes.StatusCodes.BAD_REQUEST).json({ message: "Error: user not found" });
+            res.status(codes.StatusCodes.BAD_REQUEST).send({ message: "Error: user not found" });
             return;
         }
 
@@ -68,7 +68,7 @@ exports.newCourse = async (req, res) => {
             const coursesData = await Course.find({}, { _id: 0, name: 1, category: 1, interestedStudents: 1, proposedBy: 1 });
             const user = await User.findOne({ email: email }, { _id: 0, firstName: 1, lastName1: 1, lastName2: 1, email: 1, classSection: 1, wantedCourses: 1, proposedCourses: 1 })
             fetch()
-            res.status(codes.StatusCodes.OK).json({user: user, courses: coursesData});
+            res.status(codes.StatusCodes.OK).send({user: user, courses: coursesData});
         }
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
