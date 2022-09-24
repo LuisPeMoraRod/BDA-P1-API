@@ -12,7 +12,7 @@ exports.authUser = async (req, res) => {
         else if (password !== registeredPwd.password) res.status(codes.StatusCodes.FORBIDDEN).json({ message: "Error: incorrect password" })
         else {
             const user = await User.findOne({ email: email }, { _id: 0, firstName: 1, lastName1: 1, lastName2: 1, email: 1, classSection: 1, wantedCourses: 1, proposedCourses: 1 })
-            res.status(codes.StatusCodes.OK).json(user);
+            res.status(codes.StatusCodes.OK).send(user);
         }
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);

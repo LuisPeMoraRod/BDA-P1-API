@@ -40,6 +40,7 @@ exports.newCourse = async (req, res) => {
         // get json body values
         const courseName = req.body.name;
         const email = req.body.proposedByEmail;
+        
         // check if email is registered
         const proposedBy = await User.findOne({ email: email }, { _id: 0, firstName: 1, lastName1: 1, lastName2: 1, email: 1, classSection: 1 });
 
@@ -66,7 +67,7 @@ exports.newCourse = async (req, res) => {
             
             const coursesData = await Course.find({}, { _id: 0, name: 1, category: 1, interestedStudents: 1, proposedBy: 1 });
             const user = await User.findOne({ email: email }, { _id: 0, firstName: 1, lastName1: 1, lastName2: 1, email: 1, classSection: 1, wantedCourses: 1, proposedCourses: 1 })
-            
+            fetch()
             res.status(codes.StatusCodes.OK).json({user: user, courses: coursesData});
         }
     } catch (error) {
