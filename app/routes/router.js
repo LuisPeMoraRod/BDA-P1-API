@@ -8,16 +8,22 @@ const category = require('../controllers/category');
 const course = require('../controllers/course');
 
 // GET methods
-router.get('/users/authenticate', user.authUser); // Auth user
-router.get('/class-sections/all', section.getAllSections); // Get all sections
+router.get('/users', user.getAllUsers)// Get all users
+router.get('/users/:email', user.authUser); // Auth user
+router.get('/class-sections', section.getAllSections); // Get all sections
 router.get('/class-sections/:section', section.getSection); // Get section by name
-router.get('/categories/all', category.getAllCategories); // Get all categories
+router.get('/categories', category.getAllCategories); // Get all categories
 router.get('/categories/:category', category.getCategory); // Get section by name
+router.get('/courses/:course', course.getCourse); // Get course by name
+router.get('/courses', course.getAllCourses); // Get all courses
 
 // POST methods
-router.post('/users/register', user.newUser); // Register new user
-router.post('/class-sections/register', section.newSection); // Register new section
-router.post('/categories/register', category.newCategory); // Register new category
-router.post('/courses/register', course.newCourse);
+router.post('/users', user.newUser); // Register new user
+router.post('/class-sections', section.newSection); // Register new section
+router.post('/categories', category.newCategory); // Register new category
+router.post('/courses', course.newCourse); // Register new course
+
+// PATCH/PUT methods
+router.patch('/courses/:courseName', course.handleSubscription); // Subscribe or unsubcribe user from course
 
 module.exports = router;

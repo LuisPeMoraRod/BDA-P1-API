@@ -1,0 +1,492 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "ADB - Project 1",
+        "description": "Advanced DBs first project's API",
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "host": "localhost:3000",
+    "basePath": "/api",
+    "tags": [
+        {
+            "name": "Users",
+            "description": "API for users in the app"
+        },
+        {
+            "name": "Courses",
+            "description": "API for courses in the app"
+        },
+        {
+            "name": "Categories",
+            "description": "Courses categories"
+        },
+        {
+            "name": "Class Sections",
+            "description": "Students class sections"
+        }
+    ],
+    "schemes": [
+        "http"
+    ],
+    "consumes": [
+        "application/json"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/users": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get all users' data",
+                "responses": {
+                    "200": {
+                        "description": "OK: array of users retrieved",
+                        "schema": {
+                            "$ref": "#/definitions/Users"
+                        }
+                    },
+                    "500": {
+                        "description": "INTERNAL_SERVER_ERROR"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Register new user",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "description": "User data",
+                        "type": "object",
+                        "schema": {
+                            "properties": {
+                                "firstName": {
+                                    "type": "string"
+                                },
+                                "lastName1": {
+                                    "type": "string"
+                                },
+                                "lastName2": {
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "type": "string"
+                                },
+                                "password": {
+                                    "type": "string"
+                                },
+                                "isAdmin": {
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK: user registered",
+                        "schema": {
+                            "$ref": "#/definitions/Users"
+                        }
+                    },
+                    "400": {
+                        "description": "BAD_REQUEST: email already taken"
+                    },
+                    "500": {
+                        "description": "INTERNAL_SERVER_ERROR"
+                    }
+                }
+            }
+        },
+        "/users/{email}": {
+            "parameters": [
+                {
+                    "name": "email",
+                    "in": "path",
+                    "required": true,
+                    "description": "Email of user you want to authenticate",
+                    "type": "string",
+                    "format": "email"
+                },
+                {
+                    "name": "password",
+                    "in": "query",
+                    "required": true,
+                    "description": "Password of user you want to authenticate",
+                    "type": "string",
+                    "format": "password"
+                }
+            ],
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Authenticate user by email and password",
+                "responses": {
+                    "200": {
+                        "description": "OK: email and password were correct",
+                        "schema": {
+                            "$ref": "#/definitions/User"
+                        }
+                    },
+                    "400": {
+                        "description": "BAD_REQUEST: email not registered"
+                    },
+                    "403": {
+                        "description": "FORBIDDEN: incorrect password"
+                    },
+                    "500": {
+                        "description": "INTERNAL_SERVER_ERROR"
+                    }
+                }
+            }
+        },
+        "/courses": {
+            "get": {
+                "tags": [
+                    "Courses"
+                ],
+                "summary": "Retrieve all courses data",
+                "responses": {
+                    "200": {
+                        "description": "OK: all courses data",
+                        "schema": {
+                            "$ref": "#/definitions/Courses"
+                        }
+                    },
+                    "500": {
+                        "description": "INTERNAL_SERVER_ERROR"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Courses"
+                ],
+                "summary": "Create new course",
+                "parameters": [
+                    {
+                        "name": "course",
+                        "in": "body",
+                        "required": true,
+                        "description": "Course data",
+                        "type": "object",
+                        "schema": {
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "category": {
+                                    "type": "string"
+                                },
+                                "proposedByEmail": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK: course created",
+                        "schema": {
+                            "properties": {
+                                "user": {
+                                    "$ref": "#/definitions/User"
+                                },
+                                "courses": {
+                                    "$ref": "#/definitions/Courses"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "BAD_REQUEST: user not found or course name already taken"
+                    },
+                    "500": {
+                        "description": "INTERNAL_SERVER_ERROR"
+                    }
+                }
+            }
+        },
+        "/courses/{courseName}": {
+            "get": {
+                "tags": [
+                    "Courses"
+                ],
+                "summary": "Retrieve data for a specific course",
+                "parameters": [
+                    {
+                        "name": "courseName",
+                        "in": "path",
+                        "required": true,
+                        "description": "Name of the course",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK: course data",
+                        "schema": {
+                            "$ref": "#/definitions/Courses"
+                        }
+                    },
+                    "500": {
+                        "description": "INTERNAL_SERVER_ERROR"
+                    }
+                }
+            },
+            "patch": {
+                "tags": [
+                    "Courses"
+                ],
+                "summary": "Subscribe or unsubscribe user from a course",
+                "parameters": [
+                    {
+                        "name": "courseName",
+                        "in": "path",
+                        "required": true,
+                        "description": "Name of the course",
+                        "type": "string"
+                    },
+                    {
+                        "name": "action",
+                        "in": "query",
+                        "required": true,
+                        "description": "Valid options: `subscribe` or `unsubscribe`",
+                        "type": "string",
+                        "example": "subscribe"
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "required": true,
+                        "description": "User's email",
+                        "type": "string",
+                        "format": "email"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK: successful subscription/unsubscription",
+                        "schema": {
+                            "properties": {
+                                "user": {
+                                    "$ref": "#/definitions/User"
+                                },
+                                "courses": {
+                                    "$ref": "#/definitions/Courses"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "BAD_REQUEST: action inconsistency"
+                    },
+                    "500": {
+                        "description": "INTERNAL_SERVER_ERROR"
+                    }
+                }
+            }
+        },
+        "/categories": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Retrieve all course categories",
+                "responses": {
+                    "200": {
+                        "description": "OK: all categories data",
+                        "schema": {
+                            "$ref": "#/definitions/Categories"
+                        }
+                    },
+                    "500": {
+                        "description": "INTERNAL_SERVER_ERROR"
+                    }
+                }
+            }
+        },
+        "/class-sections": {
+            "get": {
+                "tags": [
+                    "Class Sections"
+                ],
+                "summary": "Retrieve all class sections",
+                "responses": {
+                    "200": {
+                        "description": "OK: all class sections data",
+                        "schema": {
+                            "$ref": "#/definitions/Sections"
+                        }
+                    },
+                    "500": {
+                        "description": "INTERNAL_SERVER_ERROR"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Course": {
+            "required": [
+                "name",
+                "category",
+                "interestedStudents",
+                "proposedBy"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "interestedStudents": {
+                    "type": "integer"
+                },
+                "proposedBy": {
+                    "type": "object",
+                    "properties": {
+                        "firstName": {
+                            "type": "string"
+                        },
+                        "lastName1": {
+                            "type": "string"
+                        },
+                        "lastName2": {
+                            "type": "string"
+                        },
+                        "email": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "Courses": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "$ref": "#/definitions/Course"
+            }
+        },
+        "User": {
+            "required": [
+                "firstName",
+                "lastName1",
+                "lastName2",
+                "email",
+                "password",
+                "isAdmin"
+            ],
+            "properties": {
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName1": {
+                    "type": "string"
+                },
+                "lastName2": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "isAdmin": {
+                    "type": "boolean"
+                },
+                "wantedCourses": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "_id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "category": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "proposedCourses": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "_id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "category": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "Users": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "$ref": "#/definitions/User"
+            }
+        },
+        "Category": {
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "Categories": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "$ref": "#/definitions/Category"
+            }
+        },
+        "Section": {
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "Sections": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "$ref": "#/definitions/Section"
+            }
+        }
+    }
+}

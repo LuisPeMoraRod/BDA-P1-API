@@ -12,8 +12,11 @@ git clone git@github.com:LuisPeMoraRod/TI3600-P1-API.git
 ```
 npm i
 ```
-3) Run project: 
+3) Add `.env` file to root.
+4) Run project: 
 ```
 npm start
 ```
 
+## Swagger Documentation
+To access Swagger documentation, run the service and then go to: http://localhost:3000/api-docs/
