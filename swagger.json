@@ -19,6 +19,14 @@
         {
             "name": "Courses",
             "description": "API for courses in the app"
+        },
+        {
+            "name": "Categories",
+            "description": "Courses categories"
+        },
+        {
+            "name": "Class Sections",
+            "description": "Students class sections"
         }
     ],
     "schemes": [
@@ -238,6 +246,96 @@
                         "description": "INTERNAL_SERVER_ERROR"
                     }
                 }
+            },
+            "patch": {
+                "tags": [
+                    "Courses"
+                ],
+                "summary": "Subscribe or unsubscribe user from a course",
+                "parameters": [
+                    {
+                        "name": "courseName",
+                        "in": "path",
+                        "required": true,
+                        "description": "Name of the course",
+                        "type": "string"
+                    },
+                    {
+                        "name": "action",
+                        "in": "query",
+                        "required": true,
+                        "description": "Valid options: `subscribe` or `unsubscribe`",
+                        "type": "string",
+                        "example": "subscribe"
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "required": true,
+                        "description": "User's email",
+                        "type": "string",
+                        "format": "email"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK: successful subscription/unsubscription",
+                        "schema": {
+                            "properties": {
+                                "user": {
+                                    "$ref": "#/definitions/User"
+                                },
+                                "courses": {
+                                    "$ref": "#/definitions/Courses"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "BAD_REQUEST: action inconsistency"
+                    },
+                    "500": {
+                        "description": "INTERNAL_SERVER_ERROR"
+                    }
+                }
+            }
+        },
+        "/categories": {
+            "get": {
+                "tags": [
+                    "Categories"
+                ],
+                "summary": "Retrieve all course categories",
+                "responses": {
+                    "200": {
+                        "description": "OK: all categories data",
+                        "schema": {
+                            "$ref": "#/definitions/Categories"
+                        }
+                    },
+                    "500": {
+                        "description": "INTERNAL_SERVER_ERROR"
+                    }
+                }
+            }
+        },
+        "/class-sections": {
+            "get": {
+                "tags": [
+                    "Class Sections"
+                ],
+                "summary": "Retrieve all class sections",
+                "responses": {
+                    "200": {
+                        "description": "OK: all class sections data",
+                        "schema": {
+                            "$ref": "#/definitions/Sections"
+                        }
+                    },
+                    "500": {
+                        "description": "INTERNAL_SERVER_ERROR"
+                    }
+                }
             }
         }
     },
@@ -354,6 +452,40 @@
             "items": {
                 "type": "object",
                 "$ref": "#/definitions/User"
+            }
+        },
+        "Category": {
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "Categories": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "$ref": "#/definitions/Category"
+            }
+        },
+        "Section": {
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "Sections": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "$ref": "#/definitions/Section"
             }
         }
     }
