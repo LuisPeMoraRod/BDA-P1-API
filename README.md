@@ -18,5 +18,17 @@ npm i
 npm start
 ```
 
+## How to run Docker container locally
+
+1) Build image:
+```
+docker build -t api:0.0.0 .
+```
+
+2) Run container (detached and removed when killed):
+```
+docker run -d -p 3000:3000 --name api-c --rm api:0.0.0
+```
+
 ## Swagger Documentation
 To access Swagger documentation, run the service and then go to: http://localhost:3000/api-docs/
