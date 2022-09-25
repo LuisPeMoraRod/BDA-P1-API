@@ -24,9 +24,9 @@ npm start
 docker-compose up
 ```
 
-2) Stop containers
+2) Stop containers and delete images
 ```
-docker-compose down
+docker-compose down --rmi all
 ```
 
 ## How to run single Docker container locally

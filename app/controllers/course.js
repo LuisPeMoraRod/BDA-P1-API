@@ -1,9 +1,13 @@
 const codes = require('http-status-codes');
 const Course = require('../models/course');
 const User = require('../models/user');
-
+const connStrings = require('../helpers/conn-strings');
 const subscribe = 'subscribe';
 const unsubscribe = 'unsubscribe'
+
+
+const [replica1, replica2] = connStrings.setReplicaAPIs();
+
 
 const hasInterest = (wantedCourses, courseName) => {
     let interested = false;
@@ -27,6 +31,9 @@ exports.getCourse = async (req, res) => {
 // retrieve all registered courses
 exports.getAllCourses = async (req, res) => {
     try {
+        const isRedirected = req.query.isRedirected;
+        if (isRedirected) console.log("redirected");
+        
         const coursesData = await Course.find({}, { _id: 0, name: 1, category: 1, interestedStudents: 1, proposedBy: 1 });
         res.status(codes.StatusCodes.OK).send(coursesData);
     } catch (error) {
@@ -67,7 +74,6 @@ exports.newCourse = async (req, res) => {
             
             const coursesData = await Course.find({}, { _id: 0, name: 1, category: 1, interestedStudents: 1, proposedBy: 1 });
             const user = await User.findOne({ email: email }, { _id: 0, firstName: 1, lastName1: 1, lastName2: 1, email: 1, classSection: 1, wantedCourses: 1, proposedCourses: 1 })
-            fetch()
             res.status(codes.StatusCodes.OK).send({user: user, courses: coursesData});
         }
     } catch (error) {
@@ -127,4 +133,3 @@ exports.handleSubscription = async (req, res) => {
 
     }
 };
-

@@ -12,10 +12,6 @@ const connStrings = require('./app/helpers/conn-strings');
 const mongoString = connStrings.setDBUrl();
 const port = connStrings.setPort();
 
-const [replica1, replica2] = connStrings.setReplicaAPIs();
-console.log(replica1);
-console.log(replica2);
-
 //database connection
 mongoose.connect(mongoString);
 const database = mongoose.connection;

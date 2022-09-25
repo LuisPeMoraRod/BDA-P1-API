@@ -7,13 +7,13 @@ exports.authUser = async (req, res) => {
     try {
         const email = req.params.email;
         const password = req.query.password;
-        const registeredPwd = await User.findOne({ email: email });
-        if (!registeredPwd) res.status(codes.StatusCodes.BAD_REQUEST).json({ message: "Error: email not registered" });
-        else if (password !== registeredPwd.password) res.status(codes.StatusCodes.FORBIDDEN).send({ message: "Error: incorrect password" })
-        else {
-            const user = await User.findOne({ email: email }, { _id: 0, firstName: 1, lastName1: 1, lastName2: 1, email: 1, classSection: 1, wantedCourses: 1, proposedCourses: 1 })
-            res.status(codes.StatusCodes.OK).send(user);
+        if (password) {
+            const registeredPwd = await User.findOne({ email: email });
+            if (!registeredPwd) { res.status(codes.StatusCodes.BAD_REQUEST).json({ message: "Error: email not registered" }); return; }
+            else if (password !== registeredPwd.password) { res.status(codes.StatusCodes.FORBIDDEN).send({ message: "Error: incorrect password" }); return; }
         }
+        const user = await User.findOne({ email: email }, { _id: 0, firstName: 1, lastName1: 1, lastName2: 1, email: 1, classSection: 1, wantedCourses: 1, proposedCourses: 1 })
+        res.status(codes.StatusCodes.OK).send(user);
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
     }
