@@ -1,6 +1,6 @@
 # Project 1 - API
 
-First project's APIs for the frontend's SPA (developed in Angular) to be able to create, read, update and deleleta data (basic CRUD operations) in a MongoDB. This backend is intended to spin up 3 different services which feed 3 different MongoDB nodes that are replicated between each other. This services were developed using Node.js and Express.
+First project's APIs for the frontend's SPA (developed in Angular) to be able to create, read, update and deleleta data (basic CRUD operations) in a MongoDB. This backend is intended to spin up 3 different services which feed 3 different MongoDB nodes that are replicated between each other. This services were developed using Node.js, Express and Mongoose.
 
 ## How to run a signle API locally
 
@@ -15,7 +15,7 @@ npm i
 3) Add `.env` file to root.
 4) Run project: 
 ```
-npm start
+INSTANCE=0 npm start
 ```
 ## How to run the 3 containers locally
 
