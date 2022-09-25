@@ -15,7 +15,7 @@ COPY . .
 ENV INSTANCE=2
 
 # port
-EXPOSE 3000
+EXPOSE 3002
 
 CMD ["npm", "start"]
 

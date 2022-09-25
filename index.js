@@ -10,7 +10,7 @@ const connStrings = require('./app/helpers/conn-strings');
 
 // set connection strings depending on instance number
 const mongoString = connStrings.setDBUrl();
-const port = connStrings.setPort();
+// const port = connStrings.setPort();
 
 //database connection
 mongoose.connect(mongoString);
@@ -40,6 +40,7 @@ app.use(
     swaggerUi.setup(swaggerDocument)
   );
 
+const port = process.env.PORT;
 // start server
 app.listen(port, () => {
     console.log(`Server Started at ${port}`)
