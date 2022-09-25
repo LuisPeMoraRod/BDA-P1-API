@@ -102,19 +102,8 @@ exports.newCourse = async (req, res) => {
 
 const redirectNewCourse = async (course) => {
     try {
-        // const options = {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(course),
-        //     credentials: 'same-origin'
-        // }
-
-        const response1 = await axios.post(replica1.concat("/courses?isRedirected=true"), course);
-        // const response1 = await axios.get("https://swapi.dev/api/people/1");
-        console.log(response1)
-        // const response2 = await fetch(replica2.concat("/courses?isRedirected=true"), options);
+        await axios.post(replica1.concat("/courses?isRedirected=true"), course);
+        await axios.post(replica2.concat("/courses?isRedirected=true"), course);
     } catch (error) {
         console.log(error);
     }

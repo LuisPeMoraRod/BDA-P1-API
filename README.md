@@ -17,6 +17,25 @@ npm i
 ```
 INSTANCE=0 npm start
 ```
+
+## How to deploy apps to Heroku (as owner)
+1) 
+```
+heroku container:push web -a sleepy-beach-86002
+heroku container:release web -a sleepy-beach-86002
+```
+
+2) 
+```
+heroku container:push web -a lit-journey-75915
+heroku container:release web -a lit-journey-75915
+```
+
+3) 
+```
+heroku container:push web -a safe-temple-33229
+heroku container:release web -a safe-temple-33229
+```
 ## How to run the 3 containers locally
 
 1) Build images and spin up containers with Docker Compose
