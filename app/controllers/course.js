@@ -8,7 +8,12 @@ const unsubscribe = 'unsubscribe'
 
 const [replica1, replica2] = connStrings.setReplicaAPIs();
 
-
+/**
+ * Checks if course is part of user's wantedCourses
+ * @param {Array} wantedCourses 
+ * @param {String} courseName 
+ * @returns boolean
+ */
 const hasInterest = (wantedCourses, courseName) => {
     let interested = false;
     wantedCourses.forEach((course) => {
@@ -16,6 +21,20 @@ const hasInterest = (wantedCourses, courseName) => {
     })
     return interested;
 };
+
+/**
+ * Checks if user is owner of course
+ * @param {Array} wantedCourses 
+ * @param {String} courseName 
+ * @returns boolean
+ */
+const isOwner = (proposedCourses, courseName) => {
+    let isOwner = false;
+    proposedCourses.forEach((course) => {
+        if (course.name === courseName) isOwner = true;
+    })
+    return isOwner;
+}
 
 // retrieve course by name
 exports.getCourse = async (req, res) => {
@@ -33,7 +52,7 @@ exports.getAllCourses = async (req, res) => {
     try {
         const isRedirected = req.query.isRedirected;
         if (isRedirected) console.log("redirected");
-        
+
         const coursesData = await Course.find({}, { _id: 0, name: 1, category: 1, interestedStudents: 1, proposedBy: 1 });
         res.status(codes.StatusCodes.OK).send(coursesData);
     } catch (error) {
@@ -47,7 +66,7 @@ exports.newCourse = async (req, res) => {
         // get json body values
         const courseName = req.body.name;
         const email = req.body.proposedByEmail;
-        
+
         // check if email is registered
         const proposedBy = await User.findOne({ email: email }, { _id: 0, firstName: 1, lastName1: 1, lastName2: 1, email: 1, classSection: 1 });
 
@@ -69,12 +88,12 @@ exports.newCourse = async (req, res) => {
         else {
             await newCourse.save(); // add new course
 
-            const course = await Course.findOne({name: courseName}, {name: 1, category: 1});
+            const course = await Course.findOne({ name: courseName }, { name: 1, category: 1 });
             await User.updateOne({ email: email }, { $push: { proposedCourses: course } }) // add course to user's profile
-            
+
             const coursesData = await Course.find({}, { _id: 0, name: 1, category: 1, interestedStudents: 1, proposedBy: 1 });
             const user = await User.findOne({ email: email }, { _id: 0, firstName: 1, lastName1: 1, lastName2: 1, email: 1, classSection: 1, wantedCourses: 1, proposedCourses: 1 })
-            res.status(codes.StatusCodes.OK).send({user: user, courses: coursesData});
+            res.status(codes.StatusCodes.OK).send({ user: user, courses: coursesData });
         }
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
@@ -91,15 +110,20 @@ exports.handleSubscription = async (req, res) => {
         const courseName = req.params.courseName;
 
         // check if email is registered
-        const user = await User.findOne({ email: email }, { _id: 0, email: 1, wantedCourses: 1 });
+        const user = await User.findOne({ email: email }, { _id: 0, email: 1, wantedCourses: 1, proposedCourses: 1 });
         if (!user) {
             res.status(codes.StatusCodes.BAD_REQUEST).json({ message: "Error: user not found" });
             return;
         }
 
+        if (!isOwner(user.proposedCourses, courseName)) {
+            res.status(codes.StatusCodes.BAD_REQUEST).json({ message: "Error: user proposed the course, cannot subscribe or unsubscribe" });
+            return;
+        }
+
         if (action === subscribe && !hasInterest(user.wantedCourses, courseName)) {
             await Course.updateOne({ name: courseName }, { $inc: { interestedStudents: 1 } }); //increment interested students counter
-            
+
             const course = await Course.findOne({ name: courseName }, { name: 1, category: 1 });
             await User.updateOne({ email: email }, { $push: { wantedCourses: course } }) // add course to user's profile
 
@@ -107,23 +131,22 @@ exports.handleSubscription = async (req, res) => {
             const userUpdated = await User.findOne({ email: email }, { _id: 0, firstName: 1, lastName1: 1, lastName2: 1, email: 1, classSection: 1, wantedCourses: 1, proposedCourses: 1 })
 
             res.status(codes.StatusCodes.OK).json({ user: userUpdated, courses: coursesData });
-            // user = User.updateOne({email: email}, {$pullAll: {wantedCourses: {name: courseName}}})
             return;
         } else if (action === subscribe && hasInterest(user.wantedCourses, courseName)) {
             res.status(codes.StatusCodes.BAD_REQUEST).json({ message: "Error: user was already interested in course" });
             return;
         } else if (action === unsubscribe && hasInterest(user.wantedCourses, courseName)) {
             await Course.updateOne({ name: courseName }, { $inc: { interestedStudents: -1 } }); //increment interested students counter
-            
+
             const course = await Course.findOne({ name: courseName }, { name: 1, category: 1 });
-            await User.updateOne({ email: email }, {$pull: {wantedCourses: {name: courseName}}}) // add course to user's profile
+            await User.updateOne({ email: email }, { $pull: { wantedCourses: { name: courseName } } }) // add course to user's profile
 
             const coursesData = await Course.find({}, { _id: 0, name: 1, category: 1, interestedStudents: 1, proposedBy: 1 });
             const userUpdated = await User.findOne({ email: email }, { _id: 0, firstName: 1, lastName1: 1, lastName2: 1, email: 1, classSection: 1, wantedCourses: 1, proposedCourses: 1 })
 
             res.status(codes.StatusCodes.OK).json({ user: userUpdated, courses: coursesData });
             return;
-        }else if (action === unsubscribe && !hasInterest(user.wantedCourses, courseName)) {
+        } else if (action === unsubscribe && !hasInterest(user.wantedCourses, courseName)) {
             res.status(codes.StatusCodes.BAD_REQUEST).json({ message: "Error: user wasn't interested in course" });
             return;
         }
