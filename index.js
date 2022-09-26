@@ -40,8 +40,10 @@ app.use(
     swaggerUi.setup(swaggerDocument)
   );
 
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 // start server
 app.listen(port, () => {
     console.log(`Server Started at ${port}`)
 })
+
+
