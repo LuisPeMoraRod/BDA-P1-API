@@ -82,11 +82,16 @@ exports.getBottomFiveCourses = async (req, res) => {
 // retrieve amount of courses by category
 exports.getByCategory = async (req, res) => {
     try {
-        const categoriesCoursesData = await Course.aggregate(
-            [
-                {$group:{_id:category}, Total:{$sum:1}}
-            ]
-        );
+        const categoriesCoursesData = await Course.aggregate([
+            {
+                $group:
+                {
+                    _id: { category: "$category" },
+                    count: { $count: { } }
+
+                }
+            }
+        ]).sort({count: -1});
         res.status(codes.StatusCodes.OK).send(categoriesCoursesData);
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
@@ -98,7 +103,7 @@ exports.newCourse = async (req, res) => {
     try {
         // get json body values
         const courseName = req.body.name;
-        const email = req.body.proposedByEmail;
+        const email = req.body.proposedBy.email;
 
         const isRedirected = req.query.isRedirected;
         if (!isRedirected) await redirectNewCourse(req.body); //redirect request to other APIs
