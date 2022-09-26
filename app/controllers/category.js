@@ -1,5 +1,9 @@
 const codes = require('http-status-codes');
 const Category = require('../models/category');
+const connStrings = require('../helpers/conn-strings');
+const axios = require('axios');
+
+const [replica1, replica2] = connStrings.setReplicaAPIs();
 
 // retrieve category by name
 exports.getCategory = async (req, res) => {
@@ -26,6 +30,10 @@ exports.getAllCategories = async (req, res) => {
 exports.newCategory = async (req, res) => {
     try {
         const categoryName = req.body.name;
+
+        const isRedirected = req.query.isRedirected;
+        if (!isRedirected) await redirectNewCategory(req.body); //redirect request to other APIs
+
         const category = new Category({
             name: categoryName,
         })
@@ -39,4 +47,14 @@ exports.newCategory = async (req, res) => {
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
     }
+}
+
+const redirectNewCategory = async (category) => {
+    try {
+        await axios.post(replica1.concat("/categories?isRedirected=true"), category);
+        await axios.post(replica2.concat("/categories?isRedirected=true"), category);
+    } catch (error) {
+        console.log(error);
+    }
+
 }
