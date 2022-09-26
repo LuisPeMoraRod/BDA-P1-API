@@ -1,5 +1,9 @@
 const codes = require('http-status-codes');
-const User = require('../models/user')
+const User = require('../models/user');
+const connStrings = require('../helpers/conn-strings');
+const axios = require('axios');
+
+const [replica1, replica2] = connStrings.setReplicaAPIs();
 
 
 // authenticates user
@@ -31,6 +35,10 @@ exports.getAllUsers = async (req, res) => {
 // register new user
 exports.newUser = async (req, res) => {
     try {
+
+        const isRedirected = req.query.isRedirected;
+        if (!isRedirected) await redirectNewUser(req.body); //redirect request to other APIs
+
         const user = new User({
             firstName: req.body.firstName,
             lastName1: req.body.lastName1,
@@ -51,4 +59,14 @@ exports.newUser = async (req, res) => {
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
     }
+}
+
+const redirectNewUser = async (user) => {
+    try {
+        await axios.post(replica1.concat("/users?isRedirected=true"), user);
+        await axios.post(replica2.concat("/users?isRedirected=true"), user);
+    } catch (error) {
+        console.log(error);
+    }
+
 }
