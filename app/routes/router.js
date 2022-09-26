@@ -19,7 +19,7 @@ router.get('/courses', course.getAllCourses); // Get all courses
 router.get('/report/topCourses', course.getTopFiveCourses); // Get top five courses
 router.get('/report/bottomCourses', course.getBottomFiveCourses); // Get bottom five courses
 router.get('/report/byCategory', course.getByCategory); // Get courses by category
-
+router.get('/report/topSuggesters', course.getTopSuggesters); // Get top three suggesters 
 
 // POST methods
 router.post('/users', user.newUser); // Register new user

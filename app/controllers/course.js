@@ -98,6 +98,25 @@ exports.getByCategory = async (req, res) => {
     }
 }
 
+// retrieve top three suggesters 
+exports.getTopSuggesters = async (req, res) => {
+    try {
+        const suggestersCoursesData = await Course.aggregate([
+            {
+                $group:
+                {
+                    _id: { proposedBy: "$proposedBy" },
+                    count: { $count: { } }
+
+                }
+            }
+        ]).sort({count: -1}).limit(3);
+        res.status(codes.StatusCodes.OK).send(suggestersCoursesData);
+    } catch (error) {
+        res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
 //register new course
 exports.newCourse = async (req, res) => {
     try {
