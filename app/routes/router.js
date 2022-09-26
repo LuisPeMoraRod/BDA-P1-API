@@ -28,6 +28,6 @@ router.post('/categories', category.newCategory); // Register new category
 router.post('/courses', course.newCourse); // Register new course
 
 // PATCH/PUT methods
-router.patch('/courses/courseName', course.handleSubscription); // Subscribe or unsubcribe user from course
+router.patch('/courses/:courseName', course.handleSubscription); // Subscribe or unsubcribe user from course
 
 module.exports = router;

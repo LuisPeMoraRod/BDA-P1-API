@@ -66,7 +66,7 @@ const redirectNewUser = async (user) => {
         await axios.post(replica1.concat("/users?isRedirected=true"), user);
         await axios.post(replica2.concat("/users?isRedirected=true"), user);
     } catch (error) {
-        console.log(error);
+       throw new Error(error);
     }
 
 }

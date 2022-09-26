@@ -164,7 +164,7 @@ const redirectNewCourse = async (course) => {
         await axios.post(replica1.concat("/courses?isRedirected=true"), course);
         await axios.post(replica2.concat("/courses?isRedirected=true"), course);
     } catch (error) {
-        console.log(error);
+        throw new Error(error);
     }
 
 }
@@ -184,7 +184,7 @@ exports.handleSubscription = async (req, res) => {
             return;
         }
 
-        if (!isOwner(user.proposedCourses, courseName)) {
+        if (isOwner(user.proposedCourses, courseName)) {
             res.status(codes.StatusCodes.BAD_REQUEST).json({ message: "Error: user proposed the course, cannot subscribe or unsubscribe" });
             return;
         }
@@ -222,5 +222,15 @@ exports.handleSubscription = async (req, res) => {
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
 
+    }
+};
+
+const redirectSubscription = async (courseName, action, email) => {
+    try {
+        await axios.patch(replica1.concat(`/courses/${courseName}?isRedirected=true&action=${action}&email=${email}`));
+        await axios.patch(replica2.concat(`/courses/${courseName}?isRedirected=true&action=${action}&email=${email}`))
+
+    } catch (error) {
+       throw new Error(error);
     }
 };
