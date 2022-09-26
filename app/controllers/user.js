@@ -61,6 +61,10 @@ exports.newUser = async (req, res) => {
     }
 }
 
+/**
+ * Redirects new user request to other APIs
+ * @param {Object} user 
+ */
 const redirectNewUser = async (user) => {
     try {
         await axios.post(replica1.concat("/users?isRedirected=true"), user);

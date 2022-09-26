@@ -159,6 +159,10 @@ exports.newCourse = async (req, res) => {
     }
 }
 
+/**
+ * Redirects new course request to the other APIs
+ * @param {Object} course 
+ */
 const redirectNewCourse = async (course) => {
     try {
         await axios.post(replica1.concat("/courses?isRedirected=true"), course);
@@ -176,6 +180,9 @@ exports.handleSubscription = async (req, res) => {
         const action = req.query.action; //subscribe or unsubscribe
         const email = req.query.email;
         const courseName = req.params.courseName;
+
+        const isRedirected = req.query.isRedirected;
+        if (!isRedirected) await redirectSubscription(courseName, action, email); //redirect query
 
         // check if email is registered
         const user = await User.findOne({ email: email }, { _id: 0, email: 1, wantedCourses: 1, proposedCourses: 1 });
@@ -225,6 +232,12 @@ exports.handleSubscription = async (req, res) => {
     }
 };
 
+/**
+ * Redirects subscription/unsubscription request to the other APIs
+ * @param {String} courseName 
+ * @param {String} action 
+ * @param {String} email 
+ */
 const redirectSubscription = async (courseName, action, email) => {
     try {
         await axios.patch(replica1.concat(`/courses/${courseName}?isRedirected=true&action=${action}&email=${email}`));
