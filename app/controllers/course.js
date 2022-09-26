@@ -3,6 +3,7 @@ const Course = require('../models/course');
 const User = require('../models/user');
 const connStrings = require('../helpers/conn-strings');
 const axios = require('axios');
+const category = require('../models/category');
 const subscribe = 'subscribe';
 const unsubscribe = 'unsubscribe'
 
@@ -53,6 +54,40 @@ exports.getAllCourses = async (req, res) => {
     try {
         const coursesData = await Course.find({}, { _id: 0, name: 1, category: 1, interestedStudents: 1, proposedBy: 1 });
         res.status(codes.StatusCodes.OK).send(coursesData);
+    } catch (error) {
+        res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+// retrieve top 5 most wanted courses
+exports.getTopFiveCourses = async (req, res) => {
+    try {
+        const topCoursesData = await Course.find({},{_id: 0, name: 1, category: 1, interestedStudents: 1, proposedBy: 1}).sort({interestedStudents: -1}).limit(5);
+        res.status(codes.StatusCodes.OK).send(topCoursesData);
+    } catch (error) {
+        res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+// retrieve top 5 less wanted courses
+exports.getBottomFiveCourses = async (req, res) => {
+    try {
+        const bottomCoursesData = await Course.find({},{_id: 0, name: 1, category: 1, interestedStudents: 1, proposedBy: 1}).sort({interestedStudents: 1}).limit(5);
+        res.status(codes.StatusCodes.OK).send(bottomCoursesData);
+    } catch (error) {
+        res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+// retrieve amount of courses by category
+exports.getByCategory = async (req, res) => {
+    try {
+        const categoriesCoursesData = await Course.aggregate(
+            [
+                {$group:{_id:category}, Total:{$sum:1}}
+            ]
+        );
+        res.status(codes.StatusCodes.OK).send(categoriesCoursesData);
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
     }

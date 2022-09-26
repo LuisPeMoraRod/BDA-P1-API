@@ -26,6 +26,8 @@ exports.getAllCategories = async (req, res) => {
     }
 }
 
+
+
 // register new section
 exports.newCategory = async (req, res) => {
     try {
