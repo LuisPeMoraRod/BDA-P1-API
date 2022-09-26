@@ -1,5 +1,9 @@
 const codes = require('http-status-codes');
 const ClassSection = require('../models/class-section')
+const connStrings = require('../helpers/conn-strings');
+const axios = require('axios');
+
+const [replica1, replica2] = connStrings.setReplicaAPIs();
 
 
 // retrieve section by name
@@ -27,6 +31,10 @@ exports.getAllSections = async (req, res) => {
 exports.newSection = async (req, res) => {
     try {
         const sectionName = req.body.name;
+
+        const isRedirected = req.query.isRedirected;
+        if (!isRedirected) await redirectNewSection(req.body); //redirect request to other APIs
+
         const classSection = new ClassSection({
             name: sectionName,
         })
@@ -40,4 +48,14 @@ exports.newSection = async (req, res) => {
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
     }
+}
+
+const redirectNewSection = async (section) => {
+    try {
+        await axios.post(replica1.concat("/class-sections?isRedirected=true"), section);
+        await axios.post(replica2.concat("/class-sections?isRedirected=true"), section);
+    } catch (error) {
+        console.log(error);
+    }
+
 }
