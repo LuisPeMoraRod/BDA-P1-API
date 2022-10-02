@@ -2,6 +2,8 @@ const codes = require('http-status-codes');
 const Course = require('../models/course');
 const User = require('../models/user');
 const connStrings = require('../helpers/conn-strings');
+const axios = require('axios');
+const category = require('../models/category');
 const subscribe = 'subscribe';
 const unsubscribe = 'unsubscribe'
 
@@ -50,11 +52,66 @@ exports.getCourse = async (req, res) => {
 // retrieve all registered courses
 exports.getAllCourses = async (req, res) => {
     try {
-        const isRedirected = req.query.isRedirected;
-        if (isRedirected) console.log("redirected");
-
         const coursesData = await Course.find({}, { _id: 0, name: 1, category: 1, interestedStudents: 1, proposedBy: 1 });
         res.status(codes.StatusCodes.OK).send(coursesData);
+    } catch (error) {
+        res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+// retrieve top 5 most wanted courses
+exports.getTopFiveCourses = async (req, res) => {
+    try {
+        const topCoursesData = await Course.find({},{_id: 0, name: 1, category: 1, interestedStudents: 1, proposedBy: 1}).sort({interestedStudents: -1}).limit(5);
+        res.status(codes.StatusCodes.OK).send(topCoursesData);
+    } catch (error) {
+        res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+// retrieve top 5 less wanted courses
+exports.getBottomFiveCourses = async (req, res) => {
+    try {
+        const bottomCoursesData = await Course.find({},{_id: 0, name: 1, category: 1, interestedStudents: 1, proposedBy: 1}).sort({interestedStudents: 1}).limit(5);
+        res.status(codes.StatusCodes.OK).send(bottomCoursesData);
+    } catch (error) {
+        res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+// retrieve amount of courses by category
+exports.getByCategory = async (req, res) => {
+    try {
+        const categoriesCoursesData = await Course.aggregate([
+            {
+                $group:
+                {
+                    _id: { category: "$category" },
+                    count: { $count: { } }
+
+                }
+            }
+        ]).sort({count: -1});
+        res.status(codes.StatusCodes.OK).send(categoriesCoursesData);
+    } catch (error) {
+        res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
+    }
+}
+
+// retrieve top three suggesters 
+exports.getTopSuggesters = async (req, res) => {
+    try {
+        const suggestersCoursesData = await Course.aggregate([
+            {
+                $group:
+                {
+                    _id: { proposedBy: "$proposedBy" },
+                    count: { $count: { } }
+
+                }
+            }
+        ]).sort({count: -1}).limit(3);
+        res.status(codes.StatusCodes.OK).send(suggestersCoursesData);
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
     }
@@ -65,7 +122,10 @@ exports.newCourse = async (req, res) => {
     try {
         // get json body values
         const courseName = req.body.name;
-        const email = req.body.proposedByEmail;
+        const email = req.body.proposedBy.email;
+
+        const isRedirected = req.query.isRedirected;
+        if (!isRedirected) await redirectNewCourse(req.body); //redirect request to other APIs
 
         // check if email is registered
         const proposedBy = await User.findOne({ email: email }, { _id: 0, firstName: 1, lastName1: 1, lastName2: 1, email: 1, classSection: 1 });
@@ -87,10 +147,8 @@ exports.newCourse = async (req, res) => {
         if (!!matchCourse) res.status(codes.StatusCodes.BAD_REQUEST).json({ message: "Error: course name already in use" });
         else {
             await newCourse.save(); // add new course
-
             const course = await Course.findOne({ name: courseName }, { name: 1, category: 1 });
             await User.updateOne({ email: email }, { $push: { proposedCourses: course } }) // add course to user's profile
-
             const coursesData = await Course.find({}, { _id: 0, name: 1, category: 1, interestedStudents: 1, proposedBy: 1 });
             const user = await User.findOne({ email: email }, { _id: 0, firstName: 1, lastName1: 1, lastName2: 1, email: 1, classSection: 1, wantedCourses: 1, proposedCourses: 1 })
             res.status(codes.StatusCodes.OK).send({ user: user, courses: coursesData });
@@ -101,6 +159,20 @@ exports.newCourse = async (req, res) => {
     }
 }
 
+/**
+ * Redirects new course request to the other APIs
+ * @param {Object} course 
+ */
+const redirectNewCourse = async (course) => {
+    try {
+        await axios.post(replica1.concat("/courses?isRedirected=true"), course);
+        await axios.post(replica2.concat("/courses?isRedirected=true"), course);
+    } catch (error) {
+        throw new Error(error);
+    }
+
+}
+
 //handle course subscription
 exports.handleSubscription = async (req, res) => {
     try {
@@ -109,6 +181,9 @@ exports.handleSubscription = async (req, res) => {
         const email = req.query.email;
         const courseName = req.params.courseName;
 
+        const isRedirected = req.query.isRedirected;
+        if (!isRedirected) await redirectSubscription(courseName, action, email); //redirect query
+
         // check if email is registered
         const user = await User.findOne({ email: email }, { _id: 0, email: 1, wantedCourses: 1, proposedCourses: 1 });
         if (!user) {
@@ -116,7 +191,7 @@ exports.handleSubscription = async (req, res) => {
             return;
         }
 
-        if (!isOwner(user.proposedCourses, courseName)) {
+        if (isOwner(user.proposedCourses, courseName)) {
             res.status(codes.StatusCodes.BAD_REQUEST).json({ message: "Error: user proposed the course, cannot subscribe or unsubscribe" });
             return;
         }
@@ -154,5 +229,21 @@ exports.handleSubscription = async (req, res) => {
     } catch (error) {
         res.status(codes.StatusCodes.INTERNAL_SERVER_ERROR);
 
+    }
+};
+
+/**
+ * Redirects subscription/unsubscription request to the other APIs
+ * @param {String} courseName 
+ * @param {String} action 
+ * @param {String} email 
+ */
+const redirectSubscription = async (courseName, action, email) => {
+    try {
+        await axios.patch(replica1.concat(`/courses/${courseName}?isRedirected=true&action=${action}&email=${email}`));
+        await axios.patch(replica2.concat(`/courses/${courseName}?isRedirected=true&action=${action}&email=${email}`))
+
+    } catch (error) {
+       throw new Error(error);
     }
 };
