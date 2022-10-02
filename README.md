@@ -1,8 +1,8 @@
 # Project 1 - API
 
-First project's API for the frontend's SPA (developed in Angular) to be able to create, read, update and deleleta data (basic CRUD operations) in a MongoDB. This service was developed using Node.js and Express.
+First project's APIs for the frontend's SPA (developed in Angular) to be able to create, read, update and deleleta data (basic CRUD operations) in a MongoDB. This backend is intended to spin up 3 different services which feed 3 different MongoDB nodes that are replicated between each other. This services were developed using Node.js, Express and Mongoose.
 
-## How to run API
+## How to run a signle API locally
 
 1) Clone repository: 
 ```
@@ -15,7 +15,26 @@ npm i
 3) Add `.env` file to root.
 4) Run project: 
 ```
-npm start
+INSTANCE=0 npm start
+```
+
+## How to deploy apps to Heroku (as owner)
+1) 
+```
+heroku container:push web -a sleepy-beach-86002
+heroku container:release web -a sleepy-beach-86002
+```
+
+2) 
+```
+heroku container:push web -a lit-journey-75915
+heroku container:release web -a lit-journey-75915
+```
+
+3) 
+```
+heroku container:push web -a safe-temple-33229
+heroku container:release web -a safe-temple-33229
 ```
 ## How to run the 3 containers locally
 

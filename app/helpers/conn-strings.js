@@ -14,20 +14,6 @@ exports.setDBUrl = () => {
     }
 }
 
-exports.setPort = () => {
-    const instance = process.env.INSTANCE;
-    switch (instance) {
-        case "0":
-            return process.env.PORT0;
-        case "1":
-            return process.env.PORT1;
-        case "2":
-            return process.env.PORT2;
-        default:
-            return 3000;
-    }
-}
-
 exports.setReplicaAPIs = () => {
     const instance = process.env.INSTANCE;
     const api0 = process.env.API0;

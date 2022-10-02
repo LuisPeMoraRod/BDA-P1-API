@@ -12,7 +12,7 @@ RUN npm install
 COPY . .
 
 # set env variable
-ENV INSTANCE=2
+ENV INSTANCE=0
 
 # port
 EXPOSE 3000
